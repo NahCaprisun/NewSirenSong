@@ -12,6 +12,10 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.Limit_Switch;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.networktables.BooleanPublisher;
+import edu.wpi.first.networktables.BooleanTopic;
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.IntegerTopic;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.*;
@@ -28,6 +32,9 @@ public class Robot extends TimedRobot {
   private RobotContainer m_robotContainer;
   private AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(150);
   private AddressableLED m_led = new AddressableLED(9);
+
+  BooleanTopic autoEnabledTopic;
+  BooleanPublisher autoEnabledPublisher;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -46,6 +53,10 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+
+    autoEnabledTopic = m_robotContainer.netInst.getBooleanTopic("/datatable/autoEnabled");
+    autoEnabledPublisher = autoEnabledTopic.publish();
+
     m_ledBuffer = new AddressableLEDBuffer(150); // Our full LED strip length
     m_led.setLength(m_ledBuffer.getLength());
 
@@ -69,8 +80,13 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
+
+    autoEnabledPublisher.set(isAutonomousEnabled());
+
     if(!m_robotContainer._limitSwitch.isPressed()){
       setLEDColor(0,200,0);
+      m_robotContainer._leftBalancer.BalancerDown();
+      m_robotContainer._rightBalancer.BalancerDown();
     } else {
       setLEDColor(119,15,5);
     }

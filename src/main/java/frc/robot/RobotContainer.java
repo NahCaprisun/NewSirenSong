@@ -40,13 +40,17 @@ public class RobotContainer {
   private final Intake_Belt _intakeBelt = new Intake_Belt(){};
   private final Trap_Rollers _trapRollers = new Trap_Rollers();
   public final Limit_Switch _limitSwitch = new Limit_Switch(9);
+
+  public final LeftBalancer _leftBalancer = new LeftBalancer();
+  public final RightBalancer _rightBalancer = new RightBalancer();
+
   private static int driveConstant = 1;
   private DoubleTopic centerTagX;
   private IntegerTopic centerImageX;
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
 
 
-  private NetworkTableInstance netInst;
+  public NetworkTableInstance netInst;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -63,10 +67,10 @@ public class RobotContainer {
     
     new LimitSwitch(_limitSwitch).schedule();
 
-      autoChooser.setDefaultOption("Follow AprilTag", new AutonomousDrive(_drive_Train,netInst));
-      autoChooser.addOption("Cross Auto Line Only", new AMoveEnd(_drive_Train));
+      autoChooser.setDefaultOption("Cross Auto Line Only", new AMoveEnd(_drive_Train));
+      autoChooser.addOption("Follow AprilTag (do nothing)", new AutonomousDrive(_drive_Train,netInst));
       autoChooser.addOption("Score in Amp", new AScoreInAmp(_drive_Train, _intakeBar, _intakeBelt, _trapRollers, netInst));
-      autoChooser.addOption("Align With Trap (LEFT)", new AAlignTrapLeft(_drive_Train, _intakeBelt, _intakeBar, _trapRollers, _rightClaw, netInst));
+      autoChooser.addOption("Align With Trap (RIGHT)", new AAlignTrapLeft(_drive_Train, _intakeBelt, _intakeBar, _trapRollers, _rightClaw, netInst));
       SmartDashboard.putData("Auto Choices", autoChooser);
 
       SmartDashboard.putString("Team Station", DriverStation.getAlliance().toString() + " (" + DriverStation.getLocation() + ")");
@@ -144,6 +148,17 @@ public class RobotContainer {
         _drive_Train.driveReverse(
                 -_driver.getLeftY(), _driver.getRightX()*0.5),
                 _drive_Train));
+
+      _operator
+      .y()
+      .whileTrue(new RunCommand(_leftBalancer::BalancerDown, _leftBalancer))
+      .whileTrue(new RunCommand(_rightBalancer::BalancerDown, _rightBalancer));
+
+      _operator
+      .a()
+      .whileTrue(new RunCommand(_leftBalancer::BalancerUp, _leftBalancer))
+      .whileTrue(new RunCommand(_rightBalancer::BalancerUp, _rightBalancer));
+
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

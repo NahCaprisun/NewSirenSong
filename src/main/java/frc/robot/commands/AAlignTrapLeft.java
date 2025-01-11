@@ -58,6 +58,7 @@ public class AAlignTrapLeft extends Command {
         centerTagXTopic = inst.getDoubleTopic("/datatable/center_of_amp_X");
         centerImageXTopic = inst.getIntegerTopic("/datatable/center_of_image_X");
         numTargetsTopic = inst.getIntegerTopic("/datatable/num_targets_detected");
+        
         tagSub = centerTagXTopic.subscribe(-1);
         imageSub = centerImageXTopic.subscribe(-1);
         numTargetsSub = numTargetsTopic.subscribe(-1);
@@ -113,7 +114,7 @@ public class AAlignTrapLeft extends Command {
             case DEPLOY:
                 rightClaw.ClawDown();
                 
-                if(elapsedStateTime >= 0.3){
+                if(elapsedStateTime >= 1.5){
                     changeState(State.SEARCH);
                 }
 
@@ -154,7 +155,8 @@ public class AAlignTrapLeft extends Command {
             
             case RAISE_CLAW:
                 rightClaw.ClawUp();
-                if(elapsedStateTime >= 0.3){
+
+                if(elapsedStateTime >= 0.5){
                     changeState(State.END);
                 }
                 break;

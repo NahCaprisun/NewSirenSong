@@ -45,9 +45,9 @@ public final class Constants {
   }
   public static final class ClimberConstants{
     public static final int rightClawMotor = 5;
-    public static final double rightClawMotorPower = .5;
+    public static final double rightClawMotorPower = 1.0;
     public static final int leftClawMotor = 6;
-    public static final double leftClawMotorPower = .5;
+    public static final double leftClawMotorPower = 1.0;
     
     //figure out how to get the limits set up
     public static final float rightClawLimitIn = -400f;//figure ths out
